@@ -18,8 +18,9 @@ the tuple recevied may contains this data:
 
 Just need this information:
 
-> key.selection.criteria.1 = {"key":{"Name":"Peter"},"values":["City"]}" );
-
+```ini
+ key.selection.criteria.1 = {"key":{"Name":"Peter"},"values":["City"]}" );
+```
 the propagated information to next bolt into topology is:
 
 > {
