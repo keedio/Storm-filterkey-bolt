@@ -1,16 +1,12 @@
 package org.keedio.storm.filterkey.services;
 
-import com.opencsv.CSVReader;
-import org.apache.commons.lang3.tuple.Pair;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,7 +24,7 @@ public class Filtering {
     private List<CriteriaFilter> listCriterias = new ArrayList<>();
 
 
-    private String PROPERTIES_CRITERIA_SELECTION = "properties.selection.criteria.";
+    private String KEY_CRITERIA = "key.selection.criteria.";
     private String REGEXP_DIGITS = "\\d+";
 
 
@@ -39,7 +35,7 @@ public class Filtering {
      * @param config
      */
     public void setProperties(Map<String, String> config) {
-        Map<String, String> criterias = getCriterias(config, PROPERTIES_CRITERIA_SELECTION);
+        Map<String, String> criterias = getCriterias(config, KEY_CRITERIA);
         CriteriaFilter criteriaFilter = new CriteriaFilter();
         try {
             listCriterias = criteriaFilter.createListCriteria(criterias);
@@ -81,7 +77,11 @@ public class Filtering {
     }
 
     /**
-     * filterMap
+     * filterMap returns a map reduced of keys and values. The entries
+     * in common between extradaData and criterias are checked for equality,
+     * if true, get the field of the criteria a its value found in extrada and
+     * accomodate in new map.
+     *
      * @param mapOfExtradata
      * @return
      */
@@ -92,6 +92,7 @@ public class Filtering {
         for (CriteriaFilter criterio : listCriterias){
             commonMap = Maps.difference(mapOfExtradata, criterio.getKey()).entriesInCommon();
             if (criterio.getKey().equals(commonMap)){
+                filteredMap.putAll(criterio.getKey());
                 for (String field: criterio.getValues()){
                     filteredMap.put(field, mapOfExtradata.get(field));
                 }

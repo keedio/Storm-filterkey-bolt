@@ -42,7 +42,7 @@ public class FilterkeyBoltTest extends TestCase {
         bolt = new FilterkeyBolt();
         Config conf = new Config();
 
-        conf.put("properties.selection.criteria.1","{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}");
+        conf.put("key.selection.criteria.1","{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}");
 
         bolt.prepare(conf, topologyContext, collector);
     }

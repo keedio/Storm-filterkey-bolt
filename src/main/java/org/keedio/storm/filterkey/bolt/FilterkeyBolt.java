@@ -12,7 +12,6 @@ import backtype.storm.tuple.Values;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.io.IOException;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -40,16 +39,23 @@ public class FilterkeyBolt implements IRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
+
         String event = tuple.getString(0);
+
         try {
+
             Map<String, String> map = extractExtradata(event);
             Map<String, String> mapFiltered = filtering.filterMap(map);
+
             String message = extractMessage(event);
+
             collector.emit(tuple, new Values(mapFiltered, message));
+
             collector.ack(tuple);
+
         } catch (ParseException e) {
-            collector.fail(tuple);
             LOGGER.error("", e);
+            collector.fail(tuple);
         }
     }
 
@@ -60,19 +66,19 @@ public class FilterkeyBolt implements IRichBolt {
      * @param event
      * @return
      * @throws ParseException
-     *
      */
     public Map<String, String> extractExtradata(String event) throws ParseException {
         JSONParser parser = new JSONParser();
         JSONObject obj = (JSONObject) parser.parse(event);
         JSONObject obj2 = (JSONObject) obj.get("extraData");
         Map<String, String> mapOfExtradata = new HashMap<>();
-        mapOfExtradata = (Map) obj2.get("extraData");
+        mapOfExtradata = (Map) obj2;
         return mapOfExtradata;
     }
 
     /**
      * extract named field "message" and return body without changes
+     *
      * @param event
      * @return
      * @throws ParseException
@@ -80,8 +86,7 @@ public class FilterkeyBolt implements IRichBolt {
     public String extractMessage(String event) throws ParseException {
         JSONParser parser = new JSONParser();
         JSONObject obj = (JSONObject) parser.parse(event);
-        JSONObject obj2 = (JSONObject) obj.get("message");
-        String originalMessage = (String) obj2.get("message");
+        String originalMessage = (String) obj.get("message");
         return originalMessage;
     }
 
