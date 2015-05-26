@@ -44,7 +44,7 @@ public class FilterkeyBolt implements IRichBolt {
         try {
             Map<String, String> map = extractExtradata(event);
             Map<String, String> mapFiltered = filtering.filterMap(map);
-            String message = this.extractMessage(event);
+            String message = extractMessage(event);
             collector.emit(tuple, new Values(mapFiltered, message));
             collector.ack(tuple);
         } catch (ParseException e) {
@@ -59,18 +59,20 @@ public class FilterkeyBolt implements IRichBolt {
      *
      * @param event
      * @return
+     * @throws ParseException
+     *
      */
     public Map<String, String> extractExtradata(String event) throws ParseException {
         JSONParser parser = new JSONParser();
         JSONObject obj = (JSONObject) parser.parse(event);
         JSONObject obj2 = (JSONObject) obj.get("extraData");
-        Map<String, String> map = new HashMap<>();
-        map = (Map) obj2.get("extraData");
-        return map;
+        Map<String, String> mapOfExtradata = new HashMap<>();
+        mapOfExtradata = (Map) obj2.get("extraData");
+        return mapOfExtradata;
     }
 
     /**
-     * extract named fiedl "message" and return boy without changes
+     * extract named field "message" and return body without changes
      * @param event
      * @return
      * @throws ParseException
@@ -79,7 +81,7 @@ public class FilterkeyBolt implements IRichBolt {
         JSONParser parser = new JSONParser();
         JSONObject obj = (JSONObject) parser.parse(event);
         JSONObject obj2 = (JSONObject) obj.get("message");
-        String originalMessage = (String) obj2.get("extraData");
+        String originalMessage = (String) obj2.get("message");
         return originalMessage;
     }
 
