@@ -81,12 +81,23 @@ public class Filtering {
     }
 
     /**
-     *
-     * @param map
+     * filterMap
+     * @param mapOfExtradata
      * @return
      */
-    public Map<String,String> filterMap(Map<String,String> map){
+    public Map<String,String> filterMap(Map<String,String> mapOfExtradata){
         Map<String,String> filteredMap = new HashMap<>();
+        Map<String, String> commonMap = new HashMap<>();
+
+        for (CriteriaFilter criterio : listCriterias){
+            commonMap = Maps.difference(mapOfExtradata, criterio.getKey()).entriesInCommon();
+            if (criterio.getKey().equals(commonMap)){
+                for (String field: criterio.getValues()){
+                    filteredMap.put(field, mapOfExtradata.get(field));
+                }
+                return filteredMap;
+            }
+        }
         return filteredMap;
     }
 }
