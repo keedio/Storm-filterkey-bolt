@@ -29,8 +29,8 @@ public class Filtering {
 
 
     /**
-     * setProperties takes mapping of properties.selection.criteria
-     * according values in config's topology.
+     * setProperties takes mapping of key.selection.criteria
+     * according values in topology's config
      *
      * @param config
      */
@@ -45,13 +45,13 @@ public class Filtering {
     }
 
     /**
-     * Argument pattern 'properties.criteria.selection.\\d+'
-     * will be searched in config' topology. If match, key and value
+     * Argument pattern 'key.criteria.selection.\\d+'
+     * will be searched in topology's config. If match, key and value
      * will be collected into mapOfCriterias.
      * <p/>
      * For example, if in config exists:
-     * properties.criteria.selection.0 = {"key":{"Field1":"ValueforField1","Field2":"ValueforField2"},
-     * "values":["Field3","Field4","Field5"] }, field "properties.criteria.selection.0" will be
+     * key.criteria.selection.0 = {"key":{"Field1":"ValueforField1","Field2":"ValueforField2"},
+     * "values":["Field3","Field4","Field5"] }, field "key.criteria.selection.0" will be
      * added as key, and "{"key":{"Field1":"ValueforField1","Field2":"ValueforField2"},
      * "values":["Field3","Field4","Field5"] }"  will be added as value to mapOfCriterias
      *
@@ -77,10 +77,13 @@ public class Filtering {
     }
 
     /**
-     * filterMap returns a map reduced of keys and values. The entries
+     * filterMap returns a reduced map of keys and values. The entries
      * in common between extradaData and criterias are checked for equality,
-     * if true, get the field of the criteria a its value found in extrada and
+     * if true, get the field of the criteria a its value found in extraData and
      * accomodate in new map.
+     *
+     * listCriterias is a list of json. Each json is called a criteria.
+     * @see "org.keedio.storm.filterkey.services.CriteriaFilter"
      *
      * @param mapOfExtradata
      * @return
