@@ -40,11 +40,8 @@ public class FilterkeyBolt implements IRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
-
         String event = tuple.getString(0);
-
         try {
-
             Map<String, String> map = extractExtradata(event);
             Map<String, String> mapFiltered = filtering.filterMap(map);
 
@@ -58,9 +55,7 @@ public class FilterkeyBolt implements IRichBolt {
             mainObject.putAll(messageObject);
 
             System.out.println("will emit: " + mainObject + " \n");
-
-            collector.emit(tuple,new Values(mainObject));
-
+            collector.emit(new Values(mainObject.toJSONString()));
             collector.ack(tuple);
 
         } catch (ParseException e) {
@@ -100,6 +95,12 @@ public class FilterkeyBolt implements IRichBolt {
         return originalMessage;
     }
 
+    /**
+     * Make a Json with a property called extraData and a value
+     * cotaining a map.
+     * @param map
+     * @return
+     */
     public JSONObject toJsonExtradata(Map<String, String> map){
 
         JSONObject json1 = new JSONObject();
@@ -114,6 +115,12 @@ public class FilterkeyBolt implements IRichBolt {
         return  mainObj;
     }
 
+    /**
+     * Make a Json with a property called "message" and a value
+     * containig a String
+     * @param mes
+     * @return
+     */
     public JSONObject toJsonMessage(String mes){
 
         JSONObject mainObj = new JSONObject();
@@ -129,7 +136,7 @@ public class FilterkeyBolt implements IRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("json"));
+        declarer.declare(new Fields("event"));
     }
 
     @Override

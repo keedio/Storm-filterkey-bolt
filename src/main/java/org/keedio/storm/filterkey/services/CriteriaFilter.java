@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CriteriaFilter {
 
-    private static final Logger log = LoggerFactory.getLogger(CriteriaFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CriteriaFilter.class);
     private Map<String, String> key;
     private List<String> values;
 
@@ -36,11 +36,15 @@ public class CriteriaFilter {
    
     public List<CriteriaFilter> createListCriteria(Map<String, String> map) throws IOException {
         List<CriteriaFilter> listCriteriaFilter = new ArrayList<CriteriaFilter>();
-        CriteriaFilter criteriaFilter;
+        CriteriaFilter criteriaFilter = null;
 
         for (String json : map.values()) {
             if (json != null && !json.isEmpty()) {
-                criteriaFilter = JSONStringSerializer.fromJSONString(json, CriteriaFilter.class);
+                try {
+                    criteriaFilter = JSONStringSerializer.fromJSONString(json, CriteriaFilter.class);
+                } catch(IOException e){
+                    LOGGER.warn("",e);
+                }
                 listCriteriaFilter.add(criteriaFilter);
             } else {
                 continue;
@@ -71,7 +75,7 @@ public class CriteriaFilter {
         try {
             s = JSONStringSerializer.toJSONString(this);
         } catch (IOException e) {
-            log.error("IO", e);
+            LOGGER.error("IO", e);
         }
         return s;
     }
