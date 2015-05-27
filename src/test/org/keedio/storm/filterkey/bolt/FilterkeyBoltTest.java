@@ -53,6 +53,7 @@ public class FilterkeyBoltTest extends TestCase {
 
     @Test
     public void testFilterTuple() throws InterruptedException {
+        System.out.println("filterTuple");
         Tuple tuple = mock(Tuple.class);
 
         String event = "{\"extraData\":{\"Delivery\":\"Boadilla\",\"Hostname\":\"host1\",\"Item\":\"proxy\",\"Ciid\":\"211\"}" +
@@ -63,6 +64,7 @@ public class FilterkeyBoltTest extends TestCase {
 
         bolt.execute(tuple);
     }
+
 
 
     @Test

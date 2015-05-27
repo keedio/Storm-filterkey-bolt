@@ -3,7 +3,7 @@ Storm-filterkey-bolt
 This bolt operates filtering data from a stream of tuples according a mapped list of crterias specified in Topology's config.
 The tuple contains a JSON object with two fileds: "extraData" and "message". The value of the second one will never be modified,
 but will be propagated to next bolt. The value of the first one, this is, "extraData", contains another Json composed of pairs of keys
-and values intendeded to be a tag or header for the message.
+and values intended to be a tag or header for the message.
 The main goal of this bolt is to reduce the number of pairs in the "extraData". To acomplish, list of criterias must be
 supplied in Topology's file config, as a list of mapped criterias.
 

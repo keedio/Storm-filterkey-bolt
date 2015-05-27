@@ -1,6 +1,7 @@
 
 package org.keedio.storm.filterkey.bolt;
 
+import org.json.simple.JSONArray;
 import org.keedio.storm.filterkey.services.Filtering;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -49,7 +50,16 @@ public class FilterkeyBolt implements IRichBolt {
 
             String message = extractMessage(event);
 
-            collector.emit(tuple, new Values(mapFiltered, message));
+            JSONObject extradataObject = this.toJsonExtradata(mapFiltered);
+            JSONObject messageObject = this.toJsonMessage(message);
+            JSONObject mainObject = new JSONObject();
+
+            mainObject.putAll(extradataObject);
+            mainObject.putAll(messageObject);
+
+            System.out.println("will emit: " + mainObject + " \n");
+
+            collector.emit(tuple,new Values(mainObject));
 
             collector.ack(tuple);
 
@@ -90,13 +100,36 @@ public class FilterkeyBolt implements IRichBolt {
         return originalMessage;
     }
 
+    public JSONObject toJsonExtradata(Map<String, String> map){
+
+        JSONObject json1 = new JSONObject();
+        json1.putAll(map);
+
+        JSONObject json2 = new JSONObject();
+        json2.putAll(json1);
+
+        JSONObject mainObj = new JSONObject();
+        mainObj.put("extraData", json2);
+
+        return  mainObj;
+    }
+
+    public JSONObject toJsonMessage(String mes){
+
+        JSONObject mainObj = new JSONObject();
+        mainObj.put("message", mes);
+
+        return  mainObj;
+    }
+
+
     @Override
     public void cleanup() {
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("extraData", "message"));
+        declarer.declare(new Fields("json"));
     }
 
     @Override

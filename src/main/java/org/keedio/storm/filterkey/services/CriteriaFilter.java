@@ -32,7 +32,7 @@ public class CriteriaFilter {
     public CriteriaFilter() {
     }
 
-    ;
+
    
     public List<CriteriaFilter> createListCriteria(Map<String, String> map) throws IOException {
         List<CriteriaFilter> listCriteriaFilter = new ArrayList<CriteriaFilter>();
@@ -75,4 +75,5 @@ public class CriteriaFilter {
         }
         return s;
     }
+
 }
