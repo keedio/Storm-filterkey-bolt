@@ -1,0 +1,10 @@
+/target/
+.idea/
+*.ser
+*.iml
+.springBeans
+dependency-reduced-pom.xml
+.project
+.classpath
+.settings
+
