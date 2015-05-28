@@ -1,6 +1,7 @@
 
 package org.keedio.storm.filterkey.bolt;
 
+import org.json.simple.JSONArray;
 import org.keedio.storm.filterkey.services.Filtering;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -12,7 +13,6 @@ import backtype.storm.tuple.Values;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.io.IOException;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -44,12 +44,23 @@ public class FilterkeyBolt implements IRichBolt {
         try {
             Map<String, String> map = extractExtradata(event);
             Map<String, String> mapFiltered = filtering.filterMap(map);
-            String message = this.extractMessage(event);
-            collector.emit(tuple, new Values(mapFiltered, message));
+
+            String message = extractMessage(event);
+
+            JSONObject extradataObject = this.toJsonExtradata(mapFiltered);
+            JSONObject messageObject = this.toJsonMessage(message);
+            JSONObject mainObject = new JSONObject();
+
+            mainObject.putAll(extradataObject);
+            mainObject.putAll(messageObject);
+
+            System.out.println("will emit: " + mainObject + " \n");
+            collector.emit(new Values(mainObject.toJSONString()));
             collector.ack(tuple);
+
         } catch (ParseException e) {
-            collector.fail(tuple);
             LOGGER.error("", e);
+            collector.fail(tuple);
         }
     }
 
@@ -59,18 +70,20 @@ public class FilterkeyBolt implements IRichBolt {
      *
      * @param event
      * @return
+     * @throws ParseException
      */
     public Map<String, String> extractExtradata(String event) throws ParseException {
         JSONParser parser = new JSONParser();
         JSONObject obj = (JSONObject) parser.parse(event);
         JSONObject obj2 = (JSONObject) obj.get("extraData");
-        Map<String, String> map = new HashMap<>();
-        map = (Map) obj2.get("extraData");
-        return map;
+        Map<String, String> mapOfExtradata = new HashMap<>();
+        mapOfExtradata = (Map) obj2;
+        return mapOfExtradata;
     }
 
     /**
-     * extract named fiedl "message" and return boy without changes
+     * extract named field "message" and return body without changes
+     *
      * @param event
      * @return
      * @throws ParseException
@@ -78,10 +91,44 @@ public class FilterkeyBolt implements IRichBolt {
     public String extractMessage(String event) throws ParseException {
         JSONParser parser = new JSONParser();
         JSONObject obj = (JSONObject) parser.parse(event);
-        JSONObject obj2 = (JSONObject) obj.get("message");
-        String originalMessage = (String) obj2.get("extraData");
+        String originalMessage = (String) obj.get("message");
         return originalMessage;
     }
+
+    /**
+     * Make a Json with a property called extraData and a value
+     * cotaining a map.
+     * @param map
+     * @return
+     */
+    public JSONObject toJsonExtradata(Map<String, String> map){
+
+        JSONObject json1 = new JSONObject();
+        json1.putAll(map);
+
+        JSONObject json2 = new JSONObject();
+        json2.putAll(json1);
+
+        JSONObject mainObj = new JSONObject();
+        mainObj.put("extraData", json2);
+
+        return  mainObj;
+    }
+
+    /**
+     * Make a Json with a property called "message" and a value
+     * containig a String
+     * @param mes
+     * @return
+     */
+    public JSONObject toJsonMessage(String mes){
+
+        JSONObject mainObj = new JSONObject();
+        mainObj.put("message", mes);
+
+        return  mainObj;
+    }
+
 
     @Override
     public void cleanup() {
@@ -89,7 +136,7 @@ public class FilterkeyBolt implements IRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("extraData", "message"));
+        declarer.declare(new Fields("event"));
     }
 
     @Override
