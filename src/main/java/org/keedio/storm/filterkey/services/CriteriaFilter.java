@@ -14,7 +14,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Luis Lázaro <lalazaro@keedio.com>
+ * @author Luis Lázaro
+ * lalazaro@keedio.com
  */
 public class CriteriaFilter {
 

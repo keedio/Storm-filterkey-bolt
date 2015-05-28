@@ -68,9 +68,9 @@ public class FilterkeyBolt implements IRichBolt {
      * Extract named field "extraData" and return a map of its
      * values.
      *
-     * @param event
-     * @return
-     * @throws ParseException
+     * @param event of tuple
+     * @return map extracted
+     * @throws ParseException exception
      */
     public Map<String, String> extractExtradata(String event) throws ParseException {
         JSONParser parser = new JSONParser();
@@ -84,9 +84,9 @@ public class FilterkeyBolt implements IRichBolt {
     /**
      * extract named field "message" and return body without changes
      *
-     * @param event
-     * @return
-     * @throws ParseException
+     * @param event string
+     * @return string
+     * @throws ParseException parseException
      */
     public String extractMessage(String event) throws ParseException {
         JSONParser parser = new JSONParser();
@@ -98,8 +98,8 @@ public class FilterkeyBolt implements IRichBolt {
     /**
      * Make a Json with a property called extraData and a value
      * cotaining a map.
-     * @param map
-     * @return
+     * @param map of data
+     * @return jsonobject
      */
     public JSONObject toJsonExtradata(Map<String, String> map){
 
@@ -118,8 +118,8 @@ public class FilterkeyBolt implements IRichBolt {
     /**
      * Make a Json with a property called "message" and a value
      * containig a String
-     * @param mes
-     * @return
+     * @param mes message
+     * @return Jsonobject
      */
     public JSONObject toJsonMessage(String mes){
 
