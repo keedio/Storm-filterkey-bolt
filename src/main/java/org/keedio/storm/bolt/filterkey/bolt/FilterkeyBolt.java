@@ -1,8 +1,7 @@
 
-package org.keedio.storm.filterkey.bolt;
+package org.keedio.storm.bolt.filterkey.bolt;
 
-import org.json.simple.JSONArray;
-import org.keedio.storm.filterkey.services.Filtering;
+import org.keedio.storm.bolt.filterkey.services.Filtering;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.IRichBolt;

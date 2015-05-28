@@ -1,4 +1,4 @@
-package org.keedio.storm.filterkey.bolt;
+package org.keedio.storm.bolt.filterkey.bolt;
 
 import junit.framework.TestCase;
 import java.io.IOException;

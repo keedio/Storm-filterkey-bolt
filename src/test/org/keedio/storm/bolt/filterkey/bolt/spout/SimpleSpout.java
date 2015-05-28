@@ -1,4 +1,4 @@
-package org.keedio.storm.filterkey.spout;
+package org.keedio.storm.bolt.filterkey.bolt.spout;
 
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;

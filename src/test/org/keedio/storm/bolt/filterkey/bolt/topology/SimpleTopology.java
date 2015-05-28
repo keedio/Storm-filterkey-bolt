@@ -1,17 +1,14 @@
 
-package org.keedio.storm.filterkey.topology;
+package org.keedio.storm.bolt.filterkey.bolt.topology;
 
-import org.keedio.storm.filterkey.bolt.ReportBoltTest;
-import org.keedio.storm.filterkey.spout.SimpleSpout;
-import org.keedio.storm.filterkey.bolt.FilterkeyBolt;
+import org.keedio.storm.bolt.filterkey.bolt.FilterkeyBolt;
+import org.keedio.storm.bolt.filterkey.bolt.ReportBoltTest;
+import org.keedio.storm.bolt.filterkey.bolt.spout.SimpleSpout;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.topology.TopologyBuilder;
-import backtype.storm.tuple.Fields;
-import backtype.storm.utils.Utils;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
 /**
