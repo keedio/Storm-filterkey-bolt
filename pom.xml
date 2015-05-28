@@ -3,11 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.keedio</groupId>
     <artifactId>Storm-filterKey-bolt</artifactId>
-<<<<<<< HEAD
-    <version>0.0.1</version>
-=======
     <version>0.0.2</version>
->>>>>>> dev
     <packaging>jar</packaging>
     
     <name>Storm-filterkey-bolt</name>
