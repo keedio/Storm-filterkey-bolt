@@ -32,7 +32,7 @@ public class Filtering {
      * setProperties takes mapping of key.selection.criteria
      * according values in topology's config
      *
-     * @param config
+     * @param config Topolgys config
      */
     public void setProperties(Map<String, String> config) {
         Map<String, String> criterias = getCriterias(config, KEY_CRITERIA);
@@ -48,16 +48,16 @@ public class Filtering {
      * Argument pattern 'key.criteria.selection.\\d+'
      * will be searched in topology's config. If match, key and value
      * will be collected into mapOfCriterias.
-     * <p/>
+     * 
      * For example, if in config exists:
      * key.criteria.selection.0 = {"key":{"Field1":"ValueforField1","Field2":"ValueforField2"},
      * "values":["Field3","Field4","Field5"] }, field "key.criteria.selection.0" will be
      * added as key, and "{"key":{"Field1":"ValueforField1","Field2":"ValueforField2"},
      * "values":["Field3","Field4","Field5"] }"  will be added as value to mapOfCriterias
      *
-     * @param config
-     * @param pattern
-     * @return
+     * @param config Topologys config
+     * @param pattern to match
+     * @return map of criterias
      */
     public Map<String, String> getCriterias(Map config, String pattern) {
         Map<String, String> mapOfCriterias = new HashMap<>();
@@ -85,8 +85,8 @@ public class Filtering {
      * listCriterias is a list of json. Each json is called a criteria.
      * @see "org.keedio.storm.filterkey.services.CriteriaFilter"
      *
-     * @param mapOfExtradata
-     * @return
+     * @param mapOfExtradata subfield 
+     * @return map filtered
      */
     public Map<String,String> filterMap(Map<String,String> mapOfExtradata){
         Map<String,String> filteredMap = new HashMap<>();

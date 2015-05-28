@@ -1,0 +1,4 @@
+org/keedio/storm/filterkey/services/CriteriaFilter.class
+org/keedio/storm/filterkey/bolt/FilterkeyBolt.class
+org/keedio/storm/filterkey/services/Filtering.class
+org/keedio/storm/filterkey/services/JSONStringSerializer.class
