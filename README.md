@@ -26,6 +26,8 @@ the propagated information to next bolt into topology is:
 > "message": "the original body string"
 > } 
 
+### Dependecies: #####
+[guava-18.0.jar](http://search.maven.org/remotecontent?filepath=com/google/guava/guava/18.0/guava-18.0.jar)
 ### Version history ######
 0.0.1
 
