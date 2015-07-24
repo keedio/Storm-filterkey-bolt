@@ -1,6 +1,10 @@
 
 package org.keedio.storm.bolt.filterkey.bolt;
 
+import info.ganglia.gmetric4j.gmetric.GMetric;
+import org.keedio.storm.bolt.filterkey.metrics.MetricsController;
+import org.keedio.storm.bolt.filterkey.metrics.MetricsEvent;
+import org.keedio.storm.bolt.filterkey.metrics.SimpleMetric;
 import org.keedio.storm.bolt.filterkey.services.Filtering;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -10,8 +14,11 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -30,15 +37,62 @@ public class FilterkeyBolt implements IRichBolt {
     private Filtering filtering;
     private OutputCollector collector;
 
+    private MetricsController mc;
+    private Date lastExecution = new Date();
+    private Map<String, Pattern> allPatterns;
+    private int refreshTime;
+
+    //for Ganglia only
+    private String hostGanglia, reportGanglia;
+    private GMetric.UDPAddressingMode modeGanglia;
+    private int portGanglia, ttlGanglia;
+    private long secondsGanglia;
+
     @Override
     public void prepare(Map config, TopologyContext context, OutputCollector collector) {
         this.collector = collector;
         filtering = new Filtering();
         filtering.setProperties(config);
+        //check if in topology's config ganglia.report is set to "yes"
+        if (loadGangliaProperties(config)) {
+            mc = new MetricsController(hostGanglia, portGanglia, modeGanglia, ttlGanglia, secondsGanglia);
+        } else {
+            mc = new MetricsController();
+        }
+        //Inicializamos las metricas para los diferentes filtros
+        Iterator<String> keys = allPatterns.keySet().iterator();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            mc.manage(new MetricsEvent(MetricsEvent.NEW_METRIC_METER, key));
+
+            // Registramos la metrica para su publicacion
+            SimpleMetric metric = new SimpleMetric(mc.getMetrics(), key, SimpleMetric.TYPE_METER);
+            context.registerMetric(key, metric, refreshTime);
+        }
+
+        // Y añadimos las metricas de rejected, accepted y throuput
+        mc.manage(new MetricsEvent(MetricsEvent.NEW_METRIC_METER, "accepted"));
+        mc.manage(new MetricsEvent(MetricsEvent.NEW_METRIC_METER, "rejected"));
+        // Registramos la metrica para su publicacion
+        SimpleMetric accepted = new SimpleMetric(mc.getMetrics(), "accepted", SimpleMetric.TYPE_METER);
+        SimpleMetric rejected = new SimpleMetric(mc.getMetrics(), "rejected", SimpleMetric.TYPE_METER);
+        SimpleMetric histogram = new SimpleMetric(mc.getMetrics(), "histogram", SimpleMetric.TYPE_HISTOGRAM);
+        context.registerMetric("accepted", accepted, refreshTime);
+        context.registerMetric("rejected", rejected, refreshTime);
+        context.registerMetric("histogram", histogram, refreshTime);
     }
 
     @Override
     public void execute(Tuple tuple) {
+
+        // Añadimos al throughput e inicializamos el date
+        Date actualDate = new Date();
+        long aux = (actualDate.getTime() - lastExecution.getTime())/1000;
+        lastExecution = actualDate;
+
+        // Registramos para calculo de throughput
+        mc.manage(new MetricsEvent(MetricsEvent.UPDATE_THROUGHPUT, aux));
+
         String event = tuple.getString(0);
         try {
             Map<String, String> map = extractExtradata(event);
@@ -56,10 +110,12 @@ public class FilterkeyBolt implements IRichBolt {
             System.out.println("will emit: " + mainObject + " \n");
             collector.emit(new Values(mainObject.toJSONString()));
             collector.ack(tuple);
+            mc.manage(new MetricsEvent(MetricsEvent.INC_METER, "accepted"));
 
         } catch (ParseException e) {
             LOGGER.error("", e);
             collector.fail(tuple);
+            mc.manage(new MetricsEvent(MetricsEvent.INC_METER, "rejected"));
         }
     }
 
@@ -141,6 +197,26 @@ public class FilterkeyBolt implements IRichBolt {
     @Override
     public Map<String, Object> getComponentConfiguration() {
         return null;
+    }
+
+    /**
+     * ganglia's server properties are taken from main topology's config
+     * @param conf
+     * @return
+     */
+    private boolean loadGangliaProperties(Map conf){
+        boolean loaded = false;
+        reportGanglia = (String) conf.get("ganglia.report");
+        if (reportGanglia.equals("yes")) {
+            hostGanglia = (String) conf.get("ganglia.host");
+            portGanglia = Integer.parseInt((String) conf.get("ganglia.port"));
+            ttlGanglia = Integer.parseInt((String) conf.get("ganglia.ttl"));
+            secondsGanglia = Long.parseLong((String) conf.get("ganglia.seconds"));
+            String stringModeGanglia = (String) conf.get("ganglia.UDPAddressingMode");
+            modeGanglia = GMetric.UDPAddressingMode.valueOf(stringModeGanglia);
+            loaded = true;
+        }
+        return loaded;
     }
 
 }
