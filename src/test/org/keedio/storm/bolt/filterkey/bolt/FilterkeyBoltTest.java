@@ -37,22 +37,57 @@ public class FilterkeyBoltTest extends TestCase {
     @Mock
     private OutputCollector collector = mock(OutputCollector.class);
 
-    @Before
-    public void setUp() throws IOException {
+    @After
+    public void finish() throws IOException {
+    }
+
+    @Test
+    public void testEmptyValueForCriterias(){
+        bolt = new FilterkeyBolt();
+        Config conf = new Config();
+
+        conf.put("key.selection.criteria.1","");
+
+        bolt.prepare(conf, topologyContext, collector);
+        System.out.println("emptyValuesforCriterias");
+        Tuple tuple = mock(Tuple.class);
+
+        String event = "{\"extraData\":{\"Delivery\":\"Boadilla\",\"Hostname\":\"host1\",\"Item\":\"proxy\",\"Ciid\":\"211\"}" +
+                ",\"message\":\"the original body string\"}";
+
+        when(tuple.getString(anyInt())).thenReturn(event);
+
+        bolt.execute(tuple);
+    }
+
+
+    @Test
+    public void testEmptyCriterias(){
+        bolt = new FilterkeyBolt();
+        Config conf = new Config();
+
+        conf.put("","");
+
+        bolt.prepare(conf, topologyContext, collector);
+        System.out.println("emptyCriterias");
+        Tuple tuple = mock(Tuple.class);
+
+        String event = "{\"extraData\":{\"Delivery\":\"Boadilla\",\"Hostname\":\"host1\",\"Item\":\"proxy\",\"Ciid\":\"211\"}" +
+                ",\"message\":\"the original body string\"}";
+
+        when(tuple.getString(anyInt())).thenReturn(event);
+
+        bolt.execute(tuple);
+    }
+
+    @Test
+    public void testFilterTuple() throws InterruptedException {
         bolt = new FilterkeyBolt();
         Config conf = new Config();
 
         conf.put("key.selection.criteria.1","{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}");
 
         bolt.prepare(conf, topologyContext, collector);
-    }
-
-    @After
-    public void finish() throws IOException {
-    }
-
-    @Test
-    public void testFilterTuple() throws InterruptedException {
         System.out.println("filterTuple");
         Tuple tuple = mock(Tuple.class);
 
@@ -69,6 +104,13 @@ public class FilterkeyBoltTest extends TestCase {
 
     @Test
     public void testExtractExtradata() throws ParseException{
+        bolt = new FilterkeyBolt();
+        Config conf = new Config();
+
+        conf.put("key.selection.criteria.1","{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}");
+
+        bolt.prepare(conf, topologyContext, collector);
+
         System.out.println("test method exractExtraData:");
 
         String event = "{\"extraData\":{\"Delivery\":\"Boadilla\",\"Hostname\":\"host1\",\"Item\":\"proxy\",\"Ciid\":\"211\"}" +
@@ -106,6 +148,13 @@ public class FilterkeyBoltTest extends TestCase {
 
     @Test
     public void testExtractMessage() throws ParseException{
+        bolt = new FilterkeyBolt();
+        Config conf = new Config();
+
+        conf.put("key.selection.criteria.1","{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}");
+
+        bolt.prepare(conf, topologyContext, collector);
+
         System.out.println("test method exractMessage: ");
         String event = "{\"extraData\":{\"Delivery\":\"Boadilla\",\"Hostname\":\"host1\",\"Item\":\"proxy\",\"Ciid\":\"211\"}" +
                 ",\"message\":\"the original body string\"}";

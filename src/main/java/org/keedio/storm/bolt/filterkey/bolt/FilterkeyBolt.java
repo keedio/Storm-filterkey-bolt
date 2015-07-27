@@ -44,8 +44,14 @@ public class FilterkeyBolt implements IRichBolt {
             Map<String, String> mapFiltered = filtering.filterMap(map);
 
             String message = extractMessage(event);
+            JSONObject extradataObject = new JSONObject();
 
-            JSONObject extradataObject = this.toJsonExtradata(mapFiltered);
+            if (mapFiltered.isEmpty()) {
+                extradataObject = this.toJsonExtradata(map);
+            } else {
+                extradataObject = this.toJsonExtradata(mapFiltered);
+            }
+
             JSONObject messageObject = this.toJsonMessage(message);
             JSONObject mainObject = new JSONObject();
 

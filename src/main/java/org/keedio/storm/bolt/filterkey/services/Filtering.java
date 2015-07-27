@@ -25,7 +25,7 @@ public class Filtering {
 
 
     private String KEY_CRITERIA = "key.selection.criteria.";
-    private String REGEXP_DIGITS = "\\d+";
+    private String REGEXP_DIGITS = "\\d+"; //any combination of digits after KEY_CRITERIA
 
 
     /**
