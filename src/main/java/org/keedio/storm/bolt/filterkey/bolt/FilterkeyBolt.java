@@ -1,5 +1,9 @@
 package org.keedio.storm.bolt.filterkey.bolt;
 
+import info.ganglia.gmetric4j.gmetric.GMetric;
+import org.keedio.storm.bolt.filterkey.metrics.MetricsController;
+import org.keedio.storm.bolt.filterkey.metrics.MetricsEvent;
+import org.keedio.storm.bolt.filterkey.metrics.SimpleMetric;
 import org.keedio.storm.bolt.filterkey.services.Filtering;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -9,6 +13,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -28,16 +33,60 @@ public class FilterkeyBolt implements IRichBolt {
 
     private Filtering filtering;
     private OutputCollector collector;
+    private MetricsController mc;
+    private int refreshTime;
+    private Date lastExecution = new Date();
+
+    //for Ganglia only
+    private String hostGanglia, reportGanglia;
+    private GMetric.UDPAddressingMode modeGanglia;
+    private int portGanglia, ttlGanglia;
+    private int minutesGanglia;
 
     @Override
     public void prepare(Map config, TopologyContext context, OutputCollector collector) {
         this.collector = collector;
         filtering = new Filtering();
         filtering.setProperties(config);
+
+        if (config.get("refreshtime") == null)
+            refreshTime = 10;
+        else
+            refreshTime = Integer.parseInt((String) config.get("refreshtime"));
+
+        //check if in topology's config ganglia.report is set to "yes"
+        if (loadGangliaProperties(config)) {
+            mc = new MetricsController(hostGanglia, portGanglia, modeGanglia, ttlGanglia, minutesGanglia);
+        } else {
+            mc = new MetricsController();
+        }
+
+        mc.manage(new MetricsEvent(MetricsEvent.NEW_METRIC_METER, "filtered"));
+        mc.manage(new MetricsEvent(MetricsEvent.NEW_METRIC_METER, "unfiltered"));
+        mc.manage(new MetricsEvent(MetricsEvent.NEW_METRIC_METER, "errorFilter"));
+
+        // Registramos la metrica para su publicacion
+        SimpleMetric filtered = new SimpleMetric(mc.getMetrics(), "filtered", SimpleMetric.TYPE_METER);
+        SimpleMetric unfiltered = new SimpleMetric(mc.getMetrics(), "unfiltered", SimpleMetric.TYPE_METER);
+        SimpleMetric errorFilter = new SimpleMetric(mc.getMetrics(), "errorFilter", SimpleMetric.TYPE_METER);
+        SimpleMetric histogram = new SimpleMetric(mc.getMetrics(), "histogram", SimpleMetric.TYPE_HISTOGRAM);
+
+        context.registerMetric("filtered", filtered, refreshTime);
+        context.registerMetric("unfiltered", unfiltered, refreshTime);
+        context.registerMetric("errorFilter", errorFilter, refreshTime);
+        context.registerMetric("histogram", histogram, refreshTime);
     }
 
     @Override
     public void execute(Tuple tuple) {
+        // Añadimos al throughput e inicializamos el date
+        Date actualDate = new Date();
+        long aux = (actualDate.getTime() - lastExecution.getTime()) / 1000;
+        lastExecution = actualDate;
+
+        // Registramos para calculo de throughput
+        mc.manage(new MetricsEvent(MetricsEvent.UPDATE_THROUGHPUT, aux));
+
         String event = tuple.getString(0);
         try {
             Map<String, String> map = extractExtradata(event);
@@ -48,8 +97,10 @@ public class FilterkeyBolt implements IRichBolt {
 
             if (mapFiltered.isEmpty()) {
                 extradataObject = this.toJsonExtradata(map);
+                mc.manage(new MetricsEvent(MetricsEvent.INC_METER, "unfiltered"));
             } else {
                 extradataObject = this.toJsonExtradata(mapFiltered);
+                mc.manage(new MetricsEvent(MetricsEvent.INC_METER, "filtered"));
             }
 
             JSONObject messageObject = this.toJsonMessage(message);
@@ -58,13 +109,14 @@ public class FilterkeyBolt implements IRichBolt {
             mainObject.putAll(extradataObject);
             mainObject.putAll(messageObject);
 
-            System.out.println("will emit: " + mainObject + " \n");
+            LOGGER.info("Will emit: " + mainObject + " \n");
             collector.emit(new Values(mainObject.toJSONString()));
             collector.ack(tuple);
 
         } catch (ParseException e) {
             LOGGER.error("", e);
             collector.fail(tuple);
+            mc.manage(new MetricsEvent(MetricsEvent.INC_METER, "errorFilter"));
         }
     }
 
@@ -102,10 +154,11 @@ public class FilterkeyBolt implements IRichBolt {
     /**
      * Make a Json with a property called extraData and a value
      * cotaining a map.
+     *
      * @param map of data
      * @return jsonobject
      */
-    public JSONObject toJsonExtradata(Map<String, String> map){
+    public JSONObject toJsonExtradata(Map<String, String> map) {
 
         JSONObject json1 = new JSONObject();
         json1.putAll(map);
@@ -116,21 +169,22 @@ public class FilterkeyBolt implements IRichBolt {
         JSONObject mainObj = new JSONObject();
         mainObj.put("extraData", json2);
 
-        return  mainObj;
+        return mainObj;
     }
 
     /**
      * Make a Json with a property called "message" and a value
      * containig a String
+     *
      * @param mes message
      * @return Jsonobject
      */
-    public JSONObject toJsonMessage(String mes){
+    public JSONObject toJsonMessage(String mes) {
 
         JSONObject mainObj = new JSONObject();
         mainObj.put("message", mes);
 
-        return  mainObj;
+        return mainObj;
     }
 
 
@@ -146,6 +200,27 @@ public class FilterkeyBolt implements IRichBolt {
     @Override
     public Map<String, Object> getComponentConfiguration() {
         return null;
+    }
+
+    /**
+     * ganglia's server properties are taken from main topology's config
+     *
+     * @param stormConf
+     * @return
+     */
+    private boolean loadGangliaProperties(Map stormConf) {
+        boolean loaded = false;
+        reportGanglia = (String) stormConf.get("ganglia.report");
+        if (reportGanglia.equals("yes")) {
+            hostGanglia = (String) stormConf.get("ganglia.host");
+            portGanglia = Integer.parseInt((String) stormConf.get("ganglia.port"));
+            ttlGanglia = Integer.parseInt((String) stormConf.get("ganglia.ttl"));
+            minutesGanglia = Integer.parseInt((String) stormConf.get("ganglia.minutes"));
+            String stringModeGanglia = (String) stormConf.get("ganglia.UDPAddressingMode");
+            modeGanglia = GMetric.UDPAddressingMode.valueOf(stringModeGanglia);
+            loaded = true;
+        }
+        return loaded;
     }
 
 }

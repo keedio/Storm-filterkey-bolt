@@ -48,6 +48,8 @@ public class FilterkeyBoltTest extends TestCase {
 
         conf.put("key.selection.criteria.1","");
 
+        conf.put("ganglia.report", "no");
+
         bolt.prepare(conf, topologyContext, collector);
         System.out.println("emptyValuesforCriterias");
         Tuple tuple = mock(Tuple.class);
@@ -67,6 +69,7 @@ public class FilterkeyBoltTest extends TestCase {
         Config conf = new Config();
 
         conf.put("","");
+        conf.put("ganglia.report", "no");
 
         bolt.prepare(conf, topologyContext, collector);
         System.out.println("emptyCriterias");
@@ -86,6 +89,8 @@ public class FilterkeyBoltTest extends TestCase {
         Config conf = new Config();
 
         conf.put("key.selection.criteria.1","{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}");
+
+        conf.put("ganglia.report", "no");
 
         bolt.prepare(conf, topologyContext, collector);
         System.out.println("filterTuple");
@@ -108,6 +113,8 @@ public class FilterkeyBoltTest extends TestCase {
         Config conf = new Config();
 
         conf.put("key.selection.criteria.1","{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}");
+
+        conf.put("ganglia.report", "no");
 
         bolt.prepare(conf, topologyContext, collector);
 
@@ -152,6 +159,8 @@ public class FilterkeyBoltTest extends TestCase {
         Config conf = new Config();
 
         conf.put("key.selection.criteria.1","{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}");
+
+        conf.put("ganglia.report", "no");
 
         bolt.prepare(conf, topologyContext, collector);
 

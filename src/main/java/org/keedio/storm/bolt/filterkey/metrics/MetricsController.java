@@ -1,8 +1,6 @@
 package org.keedio.storm.bolt.filterkey.metrics;
 
-/**
- * Created by luislazaro on 24/7/15.
- * lalazaro@keedio.com
+/*
  * Keedio
  */
 import java.io.IOException;
