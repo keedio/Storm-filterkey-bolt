@@ -1,5 +1,5 @@
 
-package org.keedio.storm.filterkey.services;
+package org.keedio.storm.bolt.filterkey.services;
 
 
 import java.util.List;
@@ -8,14 +8,13 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.TreeMap;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.Ignore;
+import junit.framework.TestCase;
 
 /**
  *
  * @author Luis Lázaro <lalazaro@keedio.com>
  */
-public class CriteriaFilterTest {
+public class CriteriaFilterTest extends TestCase {
     
     /*
      Test the constructor of the class

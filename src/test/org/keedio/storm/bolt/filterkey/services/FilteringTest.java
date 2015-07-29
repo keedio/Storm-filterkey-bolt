@@ -1,4 +1,4 @@
-package org.keedio.storm.filterkey.services;
+package org.keedio.storm.bolt.filterkey.services;
 
 import junit.framework.TestCase;
 

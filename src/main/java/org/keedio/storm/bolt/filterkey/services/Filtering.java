@@ -1,4 +1,4 @@
-package org.keedio.storm.filterkey.services;
+package org.keedio.storm.bolt.filterkey.services;
 
 
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ public class Filtering {
 
 
     private String KEY_CRITERIA = "key.selection.criteria.";
-    private String REGEXP_DIGITS = "\\d+";
+    private String REGEXP_DIGITS = "\\d+"; //any combination of digits after KEY_CRITERIA
 
 
     /**
@@ -83,7 +83,7 @@ public class Filtering {
      * accomodate in new map.
      *
      * listCriterias is a list of json. Each json is called a criteria.
-     * @see "org.keedio.storm.filterkey.services.CriteriaFilter"
+     * @see "CriteriaFilter"
      *
      * @param mapOfExtradata subfield 
      * @return map filtered
