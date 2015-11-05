@@ -208,17 +208,21 @@ public class FilterkeyBolt implements IRichBolt {
      * @param stormConf
      * @return
      */
-    private boolean loadGangliaProperties(Map stormConf) {
+    public boolean loadGangliaProperties(Map stormConf) {
         boolean loaded = false;
-        reportGanglia = (String) stormConf.get("ganglia.report");
-        if (reportGanglia.equals("yes")) {
-            hostGanglia = (String) stormConf.get("ganglia.host");
-            portGanglia = Integer.parseInt((String) stormConf.get("ganglia.port"));
-            ttlGanglia = Integer.parseInt((String) stormConf.get("ganglia.ttl"));
-            minutesGanglia = Integer.parseInt((String) stormConf.get("ganglia.minutes"));
-            String stringModeGanglia = (String) stormConf.get("ganglia.UDPAddressingMode");
-            modeGanglia = GMetric.UDPAddressingMode.valueOf(stringModeGanglia);
-            loaded = true;
+        if (stormConf.containsKey("ganglia.report")) {
+            reportGanglia = (String) stormConf.get("ganglia.report");
+            if (reportGanglia.equals("yes")) {
+                hostGanglia = (String) stormConf.get("ganglia.host");
+                portGanglia = Integer.parseInt((String) stormConf.getOrDefault("ganglia.port", "5555"));
+                ttlGanglia = Integer.parseInt((String) stormConf.getOrDefault("ganglia.ttl", "1"));
+                minutesGanglia = Integer.parseInt((String) stormConf.getOrDefault("ganglia.minutes", "1"));
+                String stringModeGanglia = (String) stormConf.getOrDefault("ganglia.UDPAddressingMode", "MULTICAST");
+                modeGanglia = GMetric.UDPAddressingMode.valueOf(stringModeGanglia);
+                loaded = true;
+            }
+        } else {
+            stormConf.put("ganglia.report", "no");
         }
         return loaded;
     }
