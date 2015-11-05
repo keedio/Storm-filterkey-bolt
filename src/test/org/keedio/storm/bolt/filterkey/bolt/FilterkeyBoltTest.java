@@ -178,5 +178,24 @@ public class FilterkeyBoltTest extends TestCase {
         System.out.println("\n");
     }
 
+    public void testEmptyKeyForCriterias(){
+        bolt = new FilterkeyBolt();
+        Config conf = new Config();
 
+        //conf.put("key.selection.criteria.1","{\"key\":{\"\":\"\"},\"values\":[\"Item\"]}");
+        conf.put("key.selection.criteria.1","{\"key\":{},\"values\":[\"Item\"]}");
+
+        conf.put("ganglia.report", "no");
+
+        bolt.prepare(conf, topologyContext, collector);
+        System.out.println("emptyKeysforCriterias");
+        Tuple tuple = mock(Tuple.class);
+
+        String event = "{\"extraData\":{\"Delivery\":\"Boadilla\",\"Hostname\":\"host1\",\"Item\":\"proxy\",\"Ciid\":\"211\"}" +
+                ",\"message\":\"the original body string\"}";
+
+        when(tuple.getString(anyInt())).thenReturn(event);
+
+        bolt.execute(tuple);
+    }
 }
