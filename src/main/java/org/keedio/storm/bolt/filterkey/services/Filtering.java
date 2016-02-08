@@ -24,12 +24,12 @@ public class Filtering {
     private List<CriteriaFilter> listCriterias = new ArrayList<>();
 
 
-    private String KEY_CRITERIA = "key.selection.criteria.";
+    private String KEY_CRITERIA = "filterkey.bolt.key.selection.criteria.";
     private String REGEXP_DIGITS = "\\d+"; //any combination of digits after KEY_CRITERIA
 
 
     /**
-     * setProperties takes mapping of key.selection.criteria
+     * setProperties takes mapping of filterkey.bolt.key.selection.criteria
      * according values in topology's config
      *
      * @param config Topolgys config
