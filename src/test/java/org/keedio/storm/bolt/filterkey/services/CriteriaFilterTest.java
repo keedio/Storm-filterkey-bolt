@@ -4,7 +4,6 @@ package org.keedio.storm.bolt.filterkey.services;
 
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.TreeMap;
 import org.junit.Test;
@@ -88,11 +87,9 @@ public class CriteriaFilterTest extends TestCase {
 
         String result1 = "";
         String result2 = "";
-        for (int i =  0 ; i < resultList.size() ; i++){
-            result1 = resultList.get(0).toString();
-            result2 = resultList.get(1).toString();
-            break;
-        }
+            
+        result1 = resultList.get(0).toString();
+        result2 = resultList.get(1).toString();
         System.out.println(result1);
         System.out.println(expResult1);
         System.out.println(result2);

@@ -1,16 +1,16 @@
-package org.keedio.storm.bolt.filterkey.bolt;
+package org.keedio.storm.bolt.filterkey;
 
 import junit.framework.TestCase;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-
 import org.json.simple.parser.ParseException;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+import org.keedio.storm.bolt.filterkey.FilterkeyBolt;
 import org.mockito.Mock;
 
 import static org.mockito.Mockito.*;
@@ -46,9 +46,9 @@ public class FilterkeyBoltTest extends TestCase {
         bolt = new FilterkeyBolt();
         Config conf = new Config();
 
-        conf.put("key.selection.criteria.1","");
+        conf.put("filterkey.bolt.key.selection.criteria.1","");
 
-        conf.put("ganglia.report", "no");
+        conf.put("ganglia.report", "false");
 
         bolt.prepare(conf, topologyContext, collector);
         System.out.println("emptyValuesforCriterias");
@@ -57,7 +57,7 @@ public class FilterkeyBoltTest extends TestCase {
         String event = "{\"extraData\":{\"Delivery\":\"Boadilla\",\"Hostname\":\"host1\",\"Item\":\"proxy\",\"Ciid\":\"211\"}" +
                 ",\"message\":\"the original body string\"}";
 
-        when(tuple.getString(anyInt())).thenReturn(event);
+        when(tuple.getBinary(0)).thenReturn(event.getBytes());
 
         bolt.execute(tuple);
     }
@@ -69,7 +69,7 @@ public class FilterkeyBoltTest extends TestCase {
         Config conf = new Config();
 
         conf.put("","");
-        conf.put("ganglia.report", "no");
+        conf.put("ganglia.report", "false");
 
         bolt.prepare(conf, topologyContext, collector);
         System.out.println("emptyCriterias");
@@ -78,7 +78,7 @@ public class FilterkeyBoltTest extends TestCase {
         String event = "{\"extraData\":{\"Delivery\":\"Boadilla\",\"Hostname\":\"host1\",\"Item\":\"proxy\",\"Ciid\":\"211\"}" +
                 ",\"message\":\"the original body string\"}";
 
-        when(tuple.getString(anyInt())).thenReturn(event);
+        when(tuple.getBinary(0)).thenReturn(event.getBytes());
 
         bolt.execute(tuple);
     }
@@ -88,9 +88,9 @@ public class FilterkeyBoltTest extends TestCase {
         bolt = new FilterkeyBolt();
         Config conf = new Config();
 
-        conf.put("key.selection.criteria.1","{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}");
+        conf.put("filterkey.bolt.key.selection.criteria.1","{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}");
 
-        conf.put("ganglia.report", "no");
+        conf.put("ganglia.report", "false");
 
         bolt.prepare(conf, topologyContext, collector);
         System.out.println("filterTuple");
@@ -100,9 +100,10 @@ public class FilterkeyBoltTest extends TestCase {
                 ",\"message\":\"the original body string\"}";
 
 
-        when(tuple.getString(anyInt())).thenReturn(event);
+        when(tuple.getBinary(0)).thenReturn(event.getBytes());
 
         bolt.execute(tuple);
+        
     }
 
 
@@ -112,9 +113,9 @@ public class FilterkeyBoltTest extends TestCase {
         bolt = new FilterkeyBolt();
         Config conf = new Config();
 
-        conf.put("key.selection.criteria.1","{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}");
+        conf.put("filterkey.bolt.key.selection.criteria.1","{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}");
 
-        conf.put("ganglia.report", "no");
+        conf.put("ganglia.report", "false");
 
         bolt.prepare(conf, topologyContext, collector);
 
@@ -158,9 +159,9 @@ public class FilterkeyBoltTest extends TestCase {
         bolt = new FilterkeyBolt();
         Config conf = new Config();
 
-        conf.put("key.selection.criteria.1","{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}");
+        conf.put("filterkey.bolt.key.selection.criteria.1","{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}");
 
-        conf.put("ganglia.report", "no");
+        conf.put("ganglia.report", "false");
 
         bolt.prepare(conf, topologyContext, collector);
 
@@ -182,10 +183,10 @@ public class FilterkeyBoltTest extends TestCase {
         bolt = new FilterkeyBolt();
         Config conf = new Config();
 
-        //conf.put("key.selection.criteria.1","{\"key\":{\"\":\"\"},\"values\":[\"Item\"]}");
-        conf.put("key.selection.criteria.1","{\"key\":{},\"values\":[\"Item\"]}");
+        //conf.put("filterkey.bolt.key.selection.criteria.1","{\"key\":{\"\":\"\"},\"values\":[\"Item\"]}");
+        conf.put("filterkey.bolt.key.selection.criteria.1","{\"key\":{},\"values\":[\"Item\"]}");
 
-        conf.put("ganglia.report", "no");
+        conf.put("ganglia.report", "false");
 
         bolt.prepare(conf, topologyContext, collector);
         System.out.println("emptyKeysforCriterias");
@@ -194,7 +195,7 @@ public class FilterkeyBoltTest extends TestCase {
         String event = "{\"extraData\":{\"Delivery\":\"Boadilla\",\"Hostname\":\"host1\",\"Item\":\"proxy\",\"Ciid\":\"211\"}" +
                 ",\"message\":\"the original body string\"}";
 
-        when(tuple.getString(anyInt())).thenReturn(event);
+        when(tuple.getBinary(0)).thenReturn(event.getBytes());
 
         bolt.execute(tuple);
     }
@@ -210,16 +211,14 @@ public class FilterkeyBoltTest extends TestCase {
         //key = ganglia.report and value doesnot exists in config file.
         //must be set to "no" by default and no load ganglia.
         assertFalse(bolt.loadGangliaProperties(conf));
-        assert(conf.containsKey("ganglia.report"));
-        assert(conf.get("ganglia.report").equals("no"));
 
         conf = new Config();
         //key = ganglia.report and value exists in config file and set to no.
-        conf.put("ganglia.report", "no");
+        conf.put("ganglia.report", "false");
         assertFalse(bolt.loadGangliaProperties(conf));
 
         conf = new Config();
-        conf.put("ganglia.report", "yes");
+        conf.put("ganglia.report", "true");
         conf.put("ganglia.host", "localhost");
         conf.put("ganglia.port", "5555");
         conf.put("ganglia.ttl", "1");
@@ -228,7 +227,7 @@ public class FilterkeyBoltTest extends TestCase {
         assert(bolt.loadGangliaProperties(conf));
 
         conf = new Config();
-        conf.put("ganglia.report", "yes");
+        conf.put("ganglia.report", "true");
         assert(bolt.loadGangliaProperties(conf));
     }
 }

@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.keedio.storm.bolt.filterkey</groupId>
     <artifactId>Storm-filterKey-bolt</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.8-SNAPSHOT</version>
     <packaging>jar</packaging>
     
     <name>Storm-filterkey-bolt</name>
@@ -21,6 +21,12 @@
         <developer>
             <name>Luis Lázaro Medina</name>
             <email>lalazaro@keedio.org</email>
+            <organization>Keedio</organization>
+            <organizationUrl>http://www.keedio.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>Marcelo Valle Avila</name>
+            <email>mvalle@keedio.org</email>
             <organization>Keedio</organization>
             <organizationUrl>http://www.keedio.com</organizationUrl>
         </developer>
@@ -90,6 +96,11 @@
             <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.4</version>
+        </dependency>
     </dependencies>
      <build>
         <plugins>
@@ -143,8 +154,27 @@
                         </goals>
                     </execution>
                 </executions>
+	    </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-enforcer-plugin</artifactId>
+              <version>1.4.1</version>
+              <executions>
+                <execution>
+                  <id>enforce-versions</id>
+                  <goals>
+                    <goal>enforce</goal>
+                  </goals>
+                  <configuration>
+                    <rules>
+                      <requireJavaVersion>
+                        <version>1.5</version>
+                      </requireJavaVersion>
+                    </rules>
+                  </configuration>
+                </execution>
+              </executions>
             </plugin>
         </plugins>
     </build>
-
 </project>

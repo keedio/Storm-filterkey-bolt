@@ -34,14 +34,14 @@ public class FilteringTest extends TestCase {
         System.out.println("test getCriterias single criteria:");
 
         Map<String, String> mapOfConfig = new HashMap<>();
-        mapOfConfig.put("key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}" );
+        mapOfConfig.put("filterkey.bolt.key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}" );
         mapOfConfig.put("conf.pattern1","(<date>[^\\s]+)\\s+(<time>[^\\s]+)\\s+");
 
         Map<String, String> mapOfCriteriasExpected = new HashMap<>();
-        mapOfCriteriasExpected.put("key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}" );
+        mapOfCriteriasExpected.put("filterkey.bolt.key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}" );
         System.out.println(mapOfCriteriasExpected);
 
-        Map<String, String> mapOfCriteriasActual = filtering.getCriterias(mapOfConfig,"key.selection.criteria." );
+        Map<String, String> mapOfCriteriasActual = filtering.getCriterias(mapOfConfig,"filterkey.bolt.key.selection.criteria." );
 
         System.out.println(mapOfCriteriasActual);
 
@@ -55,16 +55,16 @@ public class FilteringTest extends TestCase {
         System.out.println("test getCriterias multiple criterias:");
 
         Map<String, String> mapOfConfig = new HashMap<>();
-        mapOfConfig.put("key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}" );
-        mapOfConfig.put("key.selection.criteria.2", "{\"key\":{\"Hostname\":\"host1\"},\"values\":[\"Ciid\"]}" );
+        mapOfConfig.put("filterkey.bolt.key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}" );
+        mapOfConfig.put("filterkey.bolt.key.selection.criteria.2", "{\"key\":{\"Hostname\":\"host1\"},\"values\":[\"Ciid\"]}" );
         mapOfConfig.put("conf.pattern1","(<date>[^\\s]+)\\s+(<time>[^\\s]+)\\s+");
 
         Map<String, String> mapOfCriteriasExpected = new HashMap<>();
-        mapOfCriteriasExpected.put("key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}" );
-        mapOfCriteriasExpected.put("key.selection.criteria.2", "{\"key\":{\"Hostname\":\"host1\"},\"values\":[\"Ciid\"]}");
+        mapOfCriteriasExpected.put("filterkey.bolt.key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}" );
+        mapOfCriteriasExpected.put("filterkey.bolt.key.selection.criteria.2", "{\"key\":{\"Hostname\":\"host1\"},\"values\":[\"Ciid\"]}");
         System.out.println(mapOfCriteriasExpected);
 
-        Map<String, String> mapOfCriteriasActual = filtering.getCriterias(mapOfConfig,"key.selection.criteria." );
+        Map<String, String> mapOfCriteriasActual = filtering.getCriterias(mapOfConfig,"filterkey.bolt.key.selection.criteria." );
 
         System.out.println(mapOfCriteriasActual);
 
@@ -78,7 +78,7 @@ public class FilteringTest extends TestCase {
         System.out.println("test filter of map single criteria and single key:");
 
         Map<String, String> mapOfConfig = new HashMap<>();
-        mapOfConfig.put("key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}" );
+        mapOfConfig.put("filterkey.bolt.key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}" );
         mapOfConfig.put("conf.pattern1","(<date>[^\\s]+)\\s+(<time>[^\\s]+)\\s+");
 
         filtering.setProperties(mapOfConfig);
@@ -111,7 +111,7 @@ public class FilteringTest extends TestCase {
         System.out.println("test filter of map single criteria multiple fields:");
 
         Map<String, String> mapOfConfig = new TreeMap<>();
-        mapOfConfig.put("key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\",\"Company\"]}" );
+        mapOfConfig.put("filterkey.bolt.key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\",\"Company\"]}" );
 
         mapOfConfig.put("conf.pattern1","(<date>[^\\s]+)\\s+(<time>[^\\s]+)\\s+");
 
@@ -150,7 +150,7 @@ public class FilteringTest extends TestCase {
         System.out.println("test filter of map single criteria multiple keys:");
 
         Map<String, String> mapOfConfig = new TreeMap<>();
-        mapOfConfig.put("key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Boadilla\",\"Company\":\"totta\"},\"values\":[\"Item\"]}" );
+        mapOfConfig.put("filterkey.bolt.key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Boadilla\",\"Company\":\"totta\"},\"values\":[\"Item\"]}" );
 
         mapOfConfig.put("conf.pattern1","(<date>[^\\s]+)\\s+(<time>[^\\s]+)\\s+");
 
@@ -189,8 +189,8 @@ public class FilteringTest extends TestCase {
         System.out.println("test filter of map Multiple criteria and single key:");
 
         Map<String, String> mapOfConfig = new HashMap<>();
-        mapOfConfig.put("key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Dublin\"},\"values\":[\"Item\"]}" );
-        mapOfConfig.put("key.selection.criteria.2", "{\"key\":{\"Company\":\"totta\"},\"values\":[\"Type\"]}" );
+        mapOfConfig.put("filterkey.bolt.key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Dublin\"},\"values\":[\"Item\"]}" );
+        mapOfConfig.put("filterkey.bolt.key.selection.criteria.2", "{\"key\":{\"Company\":\"totta\"},\"values\":[\"Type\"]}" );
         mapOfConfig.put("conf.pattern1","(<date>[^\\s]+)\\s+(<time>[^\\s]+)\\s+");
 
         filtering.setProperties(mapOfConfig);

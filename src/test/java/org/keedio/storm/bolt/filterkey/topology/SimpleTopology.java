@@ -1,9 +1,9 @@
 
-package org.keedio.storm.bolt.filterkey.bolt.topology;
+package org.keedio.storm.bolt.filterkey.topology;
 
-import org.keedio.storm.bolt.filterkey.bolt.FilterkeyBolt;
-import org.keedio.storm.bolt.filterkey.bolt.ReportBoltTest;
-import org.keedio.storm.bolt.filterkey.bolt.spout.SimpleSpout;
+import org.keedio.storm.bolt.filterkey.FilterkeyBolt;
+import org.keedio.storm.bolt.filterkey.ReportBoltTest;
+import org.keedio.storm.bolt.filterkey.spout.SimpleSpout;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
@@ -35,7 +35,7 @@ public class SimpleTopology {
         builder.setBolt(REPORT_BOLT_ID, reportBoltTest).globalGrouping(FILTERKEY_BOLT_ID);
 
         Config config = new Config();
-        config.put("ganglia.report", "no");
+        config.put("ganglia.report", "false");
         config.put("key.selection.criteria.1", "{\"key\":{\"Delivery\":\"Boadilla\"},\"values\":[\"Item\"]}");
         config.put("key.selection.criteria.2", "{\"key\":{\"Hostname\":\"host2\"},\"values\":[\"Ciid\"]}");
         //a failed map now, (no field for property key)
