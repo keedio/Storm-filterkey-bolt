@@ -200,34 +200,4 @@ public class FilterkeyBoltTest extends TestCase {
         bolt.execute(tuple);
     }
 
-    /**
-     * Test get properties of ganglia reporting.
-     */
-    public void  testLoadGangliaProperties(){
-        System.out.println("testLoadGangliaProperties");
-        bolt = new FilterkeyBolt();
-        Config conf = new Config();
-
-        //key = ganglia.report and value doesnot exists in config file.
-        //must be set to "no" by default and no load ganglia.
-        assertFalse(bolt.loadGangliaProperties(conf));
-
-        conf = new Config();
-        //key = ganglia.report and value exists in config file and set to no.
-        conf.put("ganglia.report", "false");
-        assertFalse(bolt.loadGangliaProperties(conf));
-
-        conf = new Config();
-        conf.put("ganglia.report", "true");
-        conf.put("ganglia.host", "localhost");
-        conf.put("ganglia.port", "5555");
-        conf.put("ganglia.ttl", "1");
-        conf.put("ganglia.UDPAddressingMode", "UNICAST");
-        conf.put("ganglia.minutes", "1");
-        assert(bolt.loadGangliaProperties(conf));
-
-        conf = new Config();
-        conf.put("ganglia.report", "true");
-        assert(bolt.loadGangliaProperties(conf));
-    }
 }
