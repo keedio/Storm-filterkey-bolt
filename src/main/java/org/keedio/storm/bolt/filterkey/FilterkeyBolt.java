@@ -123,8 +123,9 @@ public class FilterkeyBolt implements IRichBolt {
 				collector.ack(input);
 			}
 		} catch (ParseException e) {
-			LOGGER.error("", e);
-			collector.fail(input);
+			LOGGER.error("Failed to parse message " + event);
+			LOGGER.error("Error time: " + new Date(System.currentTimeMillis()));
+			collector.ack(input);
 			mc.manage(new MetricsEvent(MetricsEvent.INC_METER, "errorFilter"));
 		}
 	}
